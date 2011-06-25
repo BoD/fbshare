@@ -15,4 +15,9 @@ public class Constants {
 
     public static final String TAG = "fbshare/";
 
+    public static final String FACEBOOK_APP_ID = "139675462774421";
+
+    public static final String PREF_FACEBOOK_TOKEN = "PREF_FACEBOOK_TOKEN";
+    public static final String PREF_FACEBOOK_EXPIRES = "PREF_FACEBOOK_EXPIRES";
+
 }

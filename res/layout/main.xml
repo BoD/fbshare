@@ -9,7 +9,7 @@
 	android:padding="5dip"
 >
 	<TextView
-		android:id="@+id/url"
+		android:id="@+id/link"
 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
 		android:text="@string/sharing" />
 
 	<EditText
-		android:id="@+id/text"
+		android:id="@+id/message"
 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

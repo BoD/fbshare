@@ -3,4 +3,6 @@
     <string name="app_name">FB Share</string>
 
     <string name="sharing">Sharing: &lt;b>%s&lt;/b></string>
+    <string name="facebook_error">Sorry, the Facebook login process did not finish successfully.\nTry again later.</string>
+    <string name="post_ok">Link successfully posted.</string>
 </resources>
