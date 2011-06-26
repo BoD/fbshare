@@ -63,8 +63,16 @@ public class MainActivity extends Activity {
         mLink = getIntent().getStringExtra(Intent.EXTRA_TEXT);
         mMessage = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
 
+        if (mLink == null || !(mLink.startsWith("http://") || mLink.startsWith("https://"))) {
+            Toast.makeText(MainActivity.this, R.string.not_a_link, Toast.LENGTH_LONG).show();
+            finish();
+
+        }
+
         linkTextView.setText(Html.fromHtml(getString(R.string.sharing, mLink)));
-        mMessageEditText.append(mMessage);
+        if (mMessage != null) {
+            mMessageEditText.append(mMessage);
+        }
         mMessageEditText.setOnEditorActionListener(new OnEditorActionListener() {
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
