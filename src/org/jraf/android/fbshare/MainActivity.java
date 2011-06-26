@@ -12,14 +12,20 @@
 package org.jraf.android.fbshare;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -38,6 +44,8 @@ public class MainActivity extends Activity {
     private static final String TAG = Constants.TAG + MainActivity.class.getSimpleName();
 
     protected static final int REQUEST_AUTHORIZE = 0;
+
+    private static final int DIALOG_ABOUT = 0;
 
     private EditText mMessageEditText;
     private Button mOkButton;
@@ -99,6 +107,11 @@ public class MainActivity extends Activity {
                             editor.putString(Constants.PREF_FACEBOOK_TOKEN, mFacebook.getAccessToken());
                             editor.putLong(Constants.PREF_FACEBOOK_EXPIRES, mFacebook.getAccessExpires());
                             editor.commit();
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, R.string.facebook_ok, Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
 
                         public void onFacebookError(final FacebookError e) {
@@ -146,5 +159,84 @@ public class MainActivity extends Activity {
                 mFacebook.authorizeCallback(requestCode, resultCode, data);
             break;
         }
+    }
+
+
+    /*
+     * Menu.
+     */
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_logout:
+                new AsyncTask<Void, Void, Boolean>() {
+                    private ProgressDialog mProgressDialog;
+
+                    @Override
+                    protected void onPreExecute() {
+                        mProgressDialog = new ProgressDialog(MainActivity.this);
+                        mProgressDialog.setMessage(getString(R.string.dialog_wait_message));
+                        mProgressDialog.setCancelable(false);
+                        mProgressDialog.show();
+                    }
+
+                    @Override
+                    protected Boolean doInBackground(final Void... params) {
+                        try {
+                            mFacebook.logout(MainActivity.this);
+                            return true;
+                        } catch (final Exception e) {
+                            Log.e(TAG, "logout", e);
+                            return false;
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(final Boolean result) {
+                        mProgressDialog.dismiss();
+                        if (!result) {
+                            Toast.makeText(MainActivity.this, R.string.facebook_error_logout, Toast.LENGTH_LONG).show();
+                        } else {
+                            final Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
+                            editor.remove(Constants.PREF_FACEBOOK_TOKEN);
+                            editor.remove(Constants.PREF_FACEBOOK_EXPIRES);
+                            editor.commit();
+                            ensureFacebook();
+                        }
+                    }
+                }.execute();
+            break;
+
+            case R.id.menu_about:
+                showDialog(DIALOG_ABOUT);
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    /*
+     * Dialog.
+     */
+
+    @Override
+    protected Dialog onCreateDialog(final int id) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        switch (id) {
+            case DIALOG_ABOUT:
+                builder.setTitle(R.string.dialog_about_title);
+                builder.setIcon(android.R.drawable.ic_dialog_info);
+                builder.setMessage(R.string.dialog_about_message);
+                builder.setPositiveButton(android.R.string.ok, null);
+            break;
+        }
+        return builder.create();
     }
 }
