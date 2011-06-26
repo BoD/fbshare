@@ -64,7 +64,7 @@ public class PostService extends IntentService {
                         Toast.makeText(PostService.this, R.string.post_ok, Toast.LENGTH_LONG).show();
                     }
                 });
-                break;
+                return;
             }
             if (Config.LOGD) Log.d(TAG, "Could not post: retry=" + retry + " wait=" + wait);
             try {
