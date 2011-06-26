@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build-all">
+	<target name="build-all">
+		<subant genericantfile="build-all.xml" target="build-one">
+			<dirset dir=".." includes="config/*"/>
+			<property name="build-bod.dir" value="${basedir}"/>
+		</subant>
+	</target>
+	
+	<target name="build-one">
+		<basename property="configuration" file="${basedir}"/>
+		<echo message="Calling build-bod.xml with configuration=${configuration}"/>
+		<ant antfile="${build-bod.dir}/build-bod.xml">
+			<property name="configuration" value="${configuration}"/>
+			<property name="build-bod.dir" value="${build-bod.dir}"/>
+		</ant>
+	</target>
+</project>
