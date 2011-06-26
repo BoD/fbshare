@@ -12,6 +12,9 @@
 package org.jraf.android.fbshare;
 
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,11 +31,13 @@ public class PostService extends IntentService {
     public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
     public static final String EXTRA_LINK = "EXTRA_LINK";
 
+    private static final int MAX_RETRY = 8;
+
     private Facebook mFacebook;
     private final Handler mHandler = new Handler();
 
     public PostService() {
-        super("PostService");
+        super(PostService.class.getSimpleName());
     }
 
     public Facebook getFacebook() {
@@ -53,10 +58,18 @@ public class PostService extends IntentService {
             return;
         }
 
+        final String message = intent.getStringExtra(EXTRA_MESSAGE);
+        final String link = intent.getStringExtra(EXTRA_LINK);
+
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        final Notification postingNotification = createNotificationPosting();
+        final int postingNotificationId = (int) System.currentTimeMillis();
+        notificationManager.notify(postingNotificationId, postingNotification);
+
         int retry = 0;
         int wait = 1000;
-        while (retry < 8) {
-            final boolean ok = post(intent.getStringExtra(EXTRA_MESSAGE), intent.getStringExtra(EXTRA_LINK));
+        while (retry < MAX_RETRY) {
+            final boolean ok = post(message, link);
             if (Config.LOGD) Log.d(TAG, "post returned " + ok);
             if (ok) {
                 mHandler.post(new Runnable() {
@@ -64,6 +77,7 @@ public class PostService extends IntentService {
                         Toast.makeText(PostService.this, R.string.post_ok, Toast.LENGTH_LONG).show();
                     }
                 });
+                notificationManager.cancel(postingNotificationId);
                 return;
             }
             if (Config.LOGD) Log.d(TAG, "Could not post: retry=" + retry + " wait=" + wait);
@@ -73,10 +87,37 @@ public class PostService extends IntentService {
             wait *= 2;
             retry++;
         }
-        if (retry == 4) {
-            // TODO NOTIF
+        if (retry == MAX_RETRY) {
             if (Config.LOGD) Log.d(TAG, "Could not post after " + retry + " retries");
+            notificationManager.cancel(postingNotificationId);
+            final Notification problemNotification = createNotificationProblem(message, link);
+            notificationManager.notify(postingNotificationId, problemNotification);
         }
+    }
+
+    private Notification createNotificationPosting() {
+        final Notification notification = new Notification();
+        notification.icon = R.drawable.ic_stat_fb;
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+        final String text = getString(R.string.posting);
+        notification.setLatestEventInfo(this, text, text, PendingIntent.getBroadcast(this, 0, new Intent(), 0));// <- dummy PendingIntent mandatory
+        return notification;
+    }
+
+    private Notification createNotificationProblem(final String message, final String link) {
+        final Notification notification = new Notification();
+        notification.icon = R.drawable.ic_stat_fb;
+        final String text = getString(R.string.posting_error);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        final Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, link);
+        intent.putExtra(Intent.EXTRA_SUBJECT, message);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        notification.setLatestEventInfo(this, text, text, PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+        return notification;
     }
 
     private boolean post(final String message, final String link) {

@@ -5,4 +5,8 @@
     <string name="sharing">Sharing: &lt;b>%s&lt;/b></string>
     <string name="facebook_error">Sorry, the Facebook login process did not finish successfully.\nTry again later.</string>
     <string name="post_ok">Link successfully posted.</string>
+
+    <string name="not_a_link">Sorry, only links can be shared with FB Share - this was not a link.</string>
+    <string name="posting">Posting to Facebook...</string>
+    <string name="posting_error">Posting failed. Try again later.</string>
 </resources>
