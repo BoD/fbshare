@@ -33,14 +33,14 @@ public class PostService extends IntentService {
 
     private static final int MAX_RETRY = 8;
 
-    private Facebook mFacebook;
+    private volatile Facebook mFacebook;
     private final Handler mHandler = new Handler();
 
     public PostService() {
         super(PostService.class.getSimpleName());
     }
 
-    public Facebook getFacebook() {
+    public synchronized Facebook getFacebook() {
         if (mFacebook == null) {
             mFacebook = new Facebook(Constants.FACEBOOK_APP_ID);
             final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -69,7 +69,7 @@ public class PostService extends IntentService {
         int retry = 0;
         int wait = 1000;
         while (retry < MAX_RETRY) {
-            final boolean ok = post(message, link);
+            final boolean ok = post(message, link); // blocking
             if (Config.LOGD) Log.d(TAG, "post returned " + ok);
             if (ok) {
                 mHandler.post(new Runnable() {
@@ -120,7 +120,8 @@ public class PostService extends IntentService {
         return notification;
     }
 
-    private boolean post(final String message, final String link) {
+    private synchronized boolean post(final String message, final String link) {
+        if (Config.LOGD) Log.d(TAG, "post message=" + message + " link=" + link);
         final Bundle params = new Bundle();
         params.putString("message", message);
         params.putString("link", link);
