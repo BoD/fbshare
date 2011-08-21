@@ -16,7 +16,24 @@
     <string name="menu_about">About</string>
 
     <string name="dialog_about_title">About</string>
-    <string name="dialog_about_message">BoD FB Share v${versionName} (${buildDate})\n\nCopyright (C) 2011 BoD (aka Benoit LUBEK).</string>
+    <string name="dialog_about_message">&lt;b>BoD FB Share v${versionName} (${buildDate})&lt;/b>
+    	&lt;br/>
+		&lt;br/>Copyright 2011 Benoit \'BoD\' Lubek (BoD@JRAF.org).  All Rights Reserved.
+		&lt;br/>
+		&lt;br/>· &lt;a href="mailto:BoD@JRAF.org">BoD@JRAF.org&lt;/a>
+		&lt;br/>· &lt;a href="http://www.JRAF.org/android">www.JRAF.org/android&lt;/a>
+		&lt;br/>· &lt;a href="http://github.com/BoD">github.com/BoD&lt;/a>
+		&lt;br/>
+		&lt;br/>This program is free software: you can redistribute it and/or modify it under the terms
+		of the GNU General Public License as published by the Free Software Foundation, either version 3
+    	of the License, or (at your option) any later version.
+    	&lt;br/>
+    	&lt;br/>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+    	the GNU General Public License for more details.
+		&lt;br/>
+		&lt;br/>You should have received a copy of the GNU General Public License along with this program.
+		If not, see &lt;a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/&lt;/a>.</string>
 
     <string name="dialog_wait_message">Please wait...</string>
 

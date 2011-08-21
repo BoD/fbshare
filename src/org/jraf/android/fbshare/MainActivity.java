@@ -8,6 +8,19 @@
  * repository.
  *
  * Copyright 2011 Benoit 'BoD' Lubek (BoD@JRAF.org).  All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.jraf.android.fbshare;
 
@@ -22,8 +35,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -233,7 +248,17 @@ public class MainActivity extends Activity {
             case DIALOG_ABOUT:
                 builder.setTitle(R.string.dialog_about_title);
                 builder.setIcon(android.R.drawable.ic_dialog_info);
-                builder.setMessage(R.string.dialog_about_message);
+
+                final View content = LayoutInflater.from(this).inflate(R.layout.dialog_about, null);
+                final TextView aboutTextView = (TextView) content.findViewById(R.id.aboutTextView);
+
+                final String aboutTextEscaped = getString(R.string.dialog_about_message);
+                final CharSequence aboutTextHtml = Html.fromHtml(aboutTextEscaped);
+                aboutTextView.setText(aboutTextHtml);
+                // the following code makes links clickable!
+                aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                builder.setView(content);
+
                 builder.setPositiveButton(android.R.string.ok, null);
             break;
         }
