@@ -62,9 +62,9 @@ public class MainActivity extends Activity {
 
     private static final int DIALOG_ABOUT = 0;
 
-    private EditText mMessageEditText;
-    private Button mOkButton;
-    private Button mCancelButton;
+    private EditText mEdtMessage;
+    private Button mBtnOk;
+    private Button mBtnCancel;
 
     private String mLink;
     private String mMessage;
@@ -76,12 +76,12 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        final TextView linkTextView = (TextView) findViewById(R.id.link);
-        mMessageEditText = (EditText) findViewById(R.id.message);
-        mOkButton = (Button) findViewById(R.id.btn_ok);
-        mOkButton.setOnClickListener(mOkOnClickListener);
-        mCancelButton = (Button) findViewById(R.id.btn_cancel);
-        mCancelButton.setOnClickListener(mCancelOnClickListener);
+        final TextView linkTextView = (TextView) findViewById(R.id.txtLink);
+        mEdtMessage = (EditText) findViewById(R.id.edtMessage);
+        mBtnOk = (Button) findViewById(R.id.btnOk);
+        mBtnOk.setOnClickListener(mOkOnClickListener);
+        mBtnCancel = (Button) findViewById(R.id.btnCancel);
+        mBtnCancel.setOnClickListener(mCancelOnClickListener);
 
         mLink = getIntent().getStringExtra(Intent.EXTRA_TEXT);
         mMessage = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
@@ -94,12 +94,12 @@ public class MainActivity extends Activity {
 
         linkTextView.setText(Html.fromHtml(getString(R.string.sharing, mLink)));
         if (mMessage != null) {
-            mMessageEditText.append(mMessage);
+            mEdtMessage.append(mMessage);
         }
-        mMessageEditText.setOnEditorActionListener(new OnEditorActionListener() {
+        mEdtMessage.setOnEditorActionListener(new OnEditorActionListener() {
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    mOkButton.performClick();
+                    mBtnOk.performClick();
                     return true;
                 }
                 return false;
@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
         public void onClick(final View v) {
             if (Config.LOGD) Log.d(TAG, "mOkOnClickListener");
             startService(new Intent(MainActivity.this, PostService.class).putExtra(PostService.EXTRA_LINK, mLink).putExtra(
-                    PostService.EXTRA_MESSAGE, mMessageEditText.getText().toString()));
+                    PostService.EXTRA_MESSAGE, mEdtMessage.getText().toString()));
             finish();
         }
     };

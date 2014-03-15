@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FB Share</string>
 
+    <string name="app_name">FB Share</string>
     <string name="sharing">Sharing: &lt;b>%s&lt;/b></string>
     <string name="facebook_ok">Successfully logged on Facebook.</string>
     <string name="facebook_error">Sorry, the Facebook login process did not finish successfully.\nTry again later.</string>
     <string name="facebook_error_logout">Sorry, the Facebook logout process did not finish successfully.\nTry again later.</string>
     <string name="post_ok">Link successfully posted.</string>
-
     <string name="not_a_link">Sorry, only links can be shared with FB Share - this was not a link.</string>
-    <string name="posting">Posting to Facebook...</string>
+    <string name="posting">Posting to Facebook&#8230;</string>
     <string name="posting_error">Posting failed. Try again later.</string>
-
     <string name="menu_logout">Logout from Facebook</string>
     <string name="menu_about">About</string>
-
     <string name="dialog_about_title">About</string>
     <string name="dialog_about_message">&lt;b>BoD FB Share v${versionName} (${buildDate})&lt;/b>
     	&lt;br/>
@@ -34,7 +31,7 @@
 		&lt;br/>
 		&lt;br/>You should have received a copy of the GNU General Public License along with this program.
 		If not, see &lt;a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/&lt;/a>.</string>
-
-    <string name="dialog_wait_message">Please wait...</string>
+    <string name="dialog_wait_message">Please wait&#8230;</string>
+    <string name="message_hint">Note</string>
 
 </resources>
