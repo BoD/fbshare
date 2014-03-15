@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jraf.android.fbshare;
+package org.jraf.android.fbshare.app.service;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -35,6 +35,13 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.jraf.android.fbshare.Config;
+import org.jraf.android.fbshare.Constants;
+import org.jraf.android.fbshare.R;
+import org.jraf.android.fbshare.R.drawable;
+import org.jraf.android.fbshare.R.string;
+import org.jraf.android.fbshare.app.main.MainActivity;
 
 import com.facebook.android.Facebook;
 

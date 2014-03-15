@@ -22,11 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.jraf.android.fbshare;
+package org.jraf.android.fbshare.app.main;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,10 +33,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +46,13 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import org.jraf.android.fbshare.Config;
+import org.jraf.android.fbshare.Constants;
+import org.jraf.android.fbshare.R;
+import org.jraf.android.fbshare.app.about.AboutActivity;
+import org.jraf.android.fbshare.app.service.PostService;
+
+import com.facebook.Session;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -59,8 +62,6 @@ public class MainActivity extends Activity {
     private static final String TAG = Constants.TAG + MainActivity.class.getSimpleName();
 
     protected static final int REQUEST_AUTHORIZE = 0;
-
-    private static final int DIALOG_ABOUT = 0;
 
     private EditText mEdtMessage;
     private Button mBtnOk;
@@ -97,6 +98,7 @@ public class MainActivity extends Activity {
             mEdtMessage.append(mMessage);
         }
         mEdtMessage.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
             public boolean onEditorAction(final TextView v, final int actionId, final KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     mBtnOk.performClick();
@@ -114,52 +116,58 @@ public class MainActivity extends Activity {
         mFacebook.setAccessToken(sharedPreferences.getString(Constants.PREF_FACEBOOK_TOKEN, null));
         mFacebook.setAccessExpires(sharedPreferences.getLong(Constants.PREF_FACEBOOK_EXPIRES, 0));
         if (!mFacebook.isSessionValid()) {
-            mFacebook.authorize(MainActivity.this, new String[] { "publish_stream", "offline_access" }, REQUEST_AUTHORIZE,
-                    new DialogListener() {
-                        public void onComplete(final Bundle values) {
-                            if (Config.LOGD) Log.d(TAG, "onComplete");
-                            final Editor editor = sharedPreferences.edit();
-                            editor.putString(Constants.PREF_FACEBOOK_TOKEN, mFacebook.getAccessToken());
-                            editor.putLong(Constants.PREF_FACEBOOK_EXPIRES, mFacebook.getAccessExpires());
-                            editor.commit();
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, R.string.facebook_ok, Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
-                        public void onFacebookError(final FacebookError e) {
-                            if (Config.LOGD) Log.d(TAG, "onFacebookError", e);
-                            Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-
-                        public void onError(final DialogError e) {
-                            if (Config.LOGD) Log.d(TAG, "onError", e);
-                            Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-
-                        public void onCancel() {
-                            if (Config.LOGD) Log.d(TAG, "onCancel");
-                            Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
-                            finish();
+            mFacebook.authorize(MainActivity.this, new String[] { "publish_stream", "offline_access" }, REQUEST_AUTHORIZE, new DialogListener() {
+                @Override
+                public void onComplete(final Bundle values) {
+                    if (Config.LOGD) Log.d(TAG, "onComplete");
+                    final Editor editor = sharedPreferences.edit();
+                    editor.putString(Constants.PREF_FACEBOOK_TOKEN, mFacebook.getAccessToken());
+                    editor.putLong(Constants.PREF_FACEBOOK_EXPIRES, mFacebook.getAccessExpires());
+                    editor.commit();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.facebook_ok, Toast.LENGTH_LONG).show();
                         }
                     });
+                }
+
+                @Override
+                public void onFacebookError(final FacebookError e) {
+                    if (Config.LOGD) Log.d(TAG, "onFacebookError", e);
+                    Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                @Override
+                public void onError(final DialogError e) {
+                    if (Config.LOGD) Log.d(TAG, "onError", e);
+                    Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                @Override
+                public void onCancel() {
+                    if (Config.LOGD) Log.d(TAG, "onCancel");
+                    Toast.makeText(MainActivity.this, R.string.facebook_error, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
         }
     }
 
     private final OnClickListener mOkOnClickListener = new OnClickListener() {
+        @Override
         public void onClick(final View v) {
             if (Config.LOGD) Log.d(TAG, "mOkOnClickListener");
-            startService(new Intent(MainActivity.this, PostService.class).putExtra(PostService.EXTRA_LINK, mLink).putExtra(
-                    PostService.EXTRA_MESSAGE, mEdtMessage.getText().toString()));
+            startService(new Intent(MainActivity.this, PostService.class).putExtra(PostService.EXTRA_LINK, mLink).putExtra(PostService.EXTRA_MESSAGE,
+                    mEdtMessage.getText().toString()));
             finish();
         }
     };
 
     private final OnClickListener mCancelOnClickListener = new OnClickListener() {
+        @Override
         public void onClick(final View v) {
             if (Config.LOGD) Log.d(TAG, "mCancelOnClickListener");
             finish();
@@ -172,7 +180,7 @@ public class MainActivity extends Activity {
         switch (requestCode) {
             case REQUEST_AUTHORIZE:
                 mFacebook.authorizeCallback(requestCode, resultCode, data);
-            break;
+                break;
         }
     }
 
@@ -205,6 +213,9 @@ public class MainActivity extends Activity {
                     @Override
                     protected Boolean doInBackground(final Void... params) {
                         try {
+                            // Initializes a static context that is used in the logout method...
+                            new Session(MainActivity.this);
+                            // Logout
                             mFacebook.logout(MainActivity.this);
                             return true;
                         } catch (final Exception e) {
@@ -227,41 +238,12 @@ public class MainActivity extends Activity {
                         }
                     }
                 }.execute();
-            break;
+                break;
 
             case R.id.menu_about:
-                showDialog(DIALOG_ABOUT);
-            break;
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-
-    /*
-     * Dialog.
-     */
-
-    @Override
-    protected Dialog onCreateDialog(final int id) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        switch (id) {
-            case DIALOG_ABOUT:
-                builder.setTitle(R.string.dialog_about_title);
-                builder.setIcon(android.R.drawable.ic_dialog_info);
-
-                final View content = LayoutInflater.from(this).inflate(R.layout.dialog_about, null);
-                final TextView aboutTextView = (TextView) content.findViewById(R.id.aboutTextView);
-
-                final String aboutTextEscaped = getString(R.string.dialog_about_message);
-                final CharSequence aboutTextHtml = Html.fromHtml(aboutTextEscaped);
-                aboutTextView.setText(aboutTextHtml);
-                // the following code makes links clickable!
-                aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());
-                builder.setView(content);
-
-                builder.setPositiveButton(android.R.string.ok, null);
-            break;
-        }
-        return builder.create();
     }
 }

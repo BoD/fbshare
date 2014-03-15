@@ -14,7 +14,7 @@
 		android:theme="@android:style/Theme.Light"
 	>
 		<activity
-			android:name="org.jraf.android.fbshare.MainActivity"
+			android:name="org.jraf.android.fbshare.app.main.MainActivity"
 			android:label="@string/app_name"
 			android:windowSoftInputMode="adjustResize|stateVisible"
 			android:configChanges="orientation|keyboard|keyboardHidden"
@@ -26,7 +26,7 @@
 			</intent-filter>
 		</activity>
 
-		<service android:name="org.jraf.android.fbshare.PostService" />
+		<service android:name="org.jraf.android.fbshare.app.service.PostService" />
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET" />
