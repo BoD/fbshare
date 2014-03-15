@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.jraf.android.fbshare"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.jraf.android.fbshare"
+    android:versionName="${versionName}"
+    tools:ignore="MissingVersion" >
 
-	android:versionCode="1"
-	android:versionName="(set by build script)"
->
-	<uses-sdk android:minSdkVersion="3" />
+    <!-- android:sharedUserId="org.jraf.android" -->
 
-	<application
-		android:icon="@drawable/ic_launcher"
-		android:label="@string/app_name"
-		android:theme="@android:style/Theme.Light"
-	>
-		<activity
-			android:name="org.jraf.android.fbshare.MainActivity"
-			android:label="@string/app_name"
-			android:windowSoftInputMode="adjustResize|stateVisible"
-			android:configChanges="orientation|keyboard|keyboardHidden"
-		>
-			<intent-filter>
-				<action android:name="android.intent.action.SEND" />
-				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="text/plain" />
-			</intent-filter>
-		</activity>
+    <uses-sdk
+        android:minSdkVersion="3"
+        android:targetSdkVersion="19" />
 
-		<service android:name="org.jraf.android.fbshare.PostService" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
-	</application>
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
-	<uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme" >
+        <activity
+            android:name="org.jraf.android.fbshare.MainActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
 
-	<uses-feature
-		android:name="android.hardware.touchscreen"
-		android:required="false" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="org.jraf.android.fbshare.PostService" />
+    </application>
 
 </manifest>
